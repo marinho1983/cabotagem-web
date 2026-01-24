@@ -1,1 +1,32 @@
+{% extends "layout.html" %}
+{% block content %}
+<h2>Centros de Custo</h2>
 
+<form method="post" class="card">
+  <div class="row">
+    <input name="code" placeholder="Código (ex: 40470)" required>
+    <input name="name" placeholder="Nome (ex: Acelen / Despesa Própria)" required>
+    <select name="cc_type">
+      <option value="CLIENT">CLIENTE</option>
+      <option value="OWN">PRÓPRIO</option>
+      <option value="OWNER">DONO/ARMADOR</option>
+    </select>
+    <input name="client_name" placeholder="Nome do Cliente (se CC=CLIENTE)">
+    <button type="submit">Salvar</button>
+  </div>
+</form>
+
+<table>
+  <thead><tr><th>Código</th><th>Nome</th><th>Tipo</th><th>Cliente</th></tr></thead>
+  <tbody>
+    {% for x in items %}
+      <tr>
+        <td>{{ x.code }}</td>
+        <td>{{ x.name }}</td>
+        <td>{{ x.cc_type }}</td>
+        <td>{{ x.client.name if x.client else "" }}</td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}
