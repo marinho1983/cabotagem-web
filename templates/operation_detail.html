@@ -1,1 +1,41 @@
+{% extends "layout.html" %}
+{% block content %}
+<h2>Operação</h2>
+<p><b>{{ op.operation_key }}</b></p>
 
+<div class="card">
+  <p>
+    PDA: <b>{{ "%.2f"|format(pda) }}</b> |
+    FDA: <b>{{ "%.2f"|format(fda) }}</b> |
+    Direto: <b>{{ "%.2f"|format(direct) }}</b> |
+    Dif (FDA-PDA): <b>{{ "%.2f"|format(diff) }}</b>
+  </p>
+  <p><a href="/operation/{{ op.id }}/entry/new">+ Lançar despesa</a></p>
+</div>
+
+<table>
+  <thead>
+    <tr>
+      <th>Grupo</th><th>Doc</th><th>PO</th><th>RQA</th><th>Fornecedor</th>
+      <th>Moeda</th><th>Valor</th><th>ROE</th><th>BRL</th><th>Venc.</th><th>Status</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for e in entries %}
+      <tr>
+        <td>{{ e.billing_group }}</td>
+        <td>{{ e.document_type or "" }}</td>
+        <td>{{ e.po or "" }}</td>
+        <td>{{ e.rqa or "" }}</td>
+        <td>{{ e.supplier.name if e.supplier else "" }}</td>
+        <td>{{ e.currency }}</td>
+        <td>{{ e.amount_original }}</td>
+        <td>{{ e.roe or "" }}</td>
+        <td>{{ e.amount_brl or "" }}</td>
+        <td>{{ e.due_date or "" }}</td>
+        <td>{{ e.status or "" }}</td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}
