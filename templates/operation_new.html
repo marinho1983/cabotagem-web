@@ -1,1 +1,37 @@
+{% extends "layout.html" %}
+{% block content %}
+<h2>Nova Operação</h2>
 
+<form method="post" class="card">
+  <div class="row">
+    <select name="cc_id" required>
+      {% for x in ccs %}
+        <option value="{{ x.id }}">{{ x.code }} - {{ x.name }} ({{ x.cc_type }})</option>
+      {% endfor %}
+    </select>
+
+    <select name="vessel_id" required>
+      {% for x in vessels %}
+        <option value="{{ x.id }}">{{ x.name }} ({{ x.vessel_type }})</option>
+      {% endfor %}
+    </select>
+
+    <select name="port_id" required>
+      {% for x in ports %}
+        <option value="{{ x.id }}">{{ x.name }}</option>
+      {% endfor %}
+    </select>
+
+    <input name="voyage_code" placeholder="Viagem (ex: PSV240173-20)" required>
+
+    <select name="agency_id">
+      <option value="0">Agência responsável (opcional)</option>
+      {% for a in agencies %}
+        <option value="{{ a.id }}">{{ a.name }}</option>
+      {% endfor %}
+    </select>
+
+    <button type="submit">Criar</button>
+  </div>
+</form>
+{% endblock %}
