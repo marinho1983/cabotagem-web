@@ -1,1 +1,13 @@
-
+{% extends "layout.html" %}
+{% block content %}
+<h2>Cabotagem Web (MVP)</h2>
+<div class="card">
+  <p><b>Ordem recomendada:</b></p>
+  <ol>
+    <li>Cadastre os <b>Centros de Custo</b> (CLIENT / OWN / OWNER)</li>
+    <li>Cadastre <b>Navios</b>, <b>Portos</b> e <b>Fornecedores</b> (AGENCY / DIRECT)</li>
+    <li>Crie uma <b>Operação</b> (CC + Navio + Porto + Viagem)</li>
+    <li>Entre na operação e lance as <b>despesas</b> (multi-moeda)</li>
+  </ol>
+</div>
+{% endblock %}
