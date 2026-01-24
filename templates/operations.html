@@ -1,1 +1,25 @@
+{% extends "layout.html" %}
+{% block content %}
+<h2>Operações</h2>
+<p><a href="/operations/new">+ Nova Operação</a></p>
 
+<table>
+  <thead>
+    <tr>
+      <th>Operação</th><th>PDA</th><th>FDA</th><th>Direto</th><th>FDA-PDA</th><th></th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for r in rows %}
+      <tr>
+        <td>{{ r.op.operation_key }}</td>
+        <td>{{ "%.2f"|format(r.pda) }}</td>
+        <td>{{ "%.2f"|format(r.fda) }}</td>
+        <td>{{ "%.2f"|format(r.direct) }}</td>
+        <td>{{ "%.2f"|format(r.diff) }}</td>
+        <td><a href="/operation/{{ r.op.id }}">abrir</a></td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}
