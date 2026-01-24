@@ -1,1 +1,41 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Cabotagem Web</title>
+  <style>
+    body{font-family:Arial,sans-serif;margin:18px}
+    a{text-decoration:none}
+    .top a{margin-right:12px}
+    table{border-collapse:collapse;width:100%}
+    th,td{border:1px solid #ddd;padding:8px;font-size:14px}
+    th{background:#f5f5f5;text-align:left}
+    .msg{padding:10px;margin:10px 0;border:1px solid #ddd}
+    .row{display:flex;gap:10px;flex-wrap:wrap}
+    .card{border:1px solid #ddd;padding:12px;margin:10px 0}
+    input,select,textarea{padding:7px;font-size:14px}
+    button{padding:8px 12px}
+  </style>
+</head>
+<body>
+  <div class="top">
+    <a href="/">Início</a>
+    <a href="/cost-centers">Centros de Custo</a>
+    <a href="/vessels">Navios</a>
+    <a href="/ports">Portos</a>
+    <a href="/suppliers">Fornecedores</a>
+    <a href="/operations">Operações</a>
+  </div>
 
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for cat, msg in messages %}
+        <div class="msg">{{ msg }}</div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+
+  {% block content %}{% endblock %}
+</body>
+</html>
