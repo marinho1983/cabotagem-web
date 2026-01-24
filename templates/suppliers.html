@@ -1,1 +1,24 @@
+{% extends "layout.html" %}
+{% block content %}
+<h2>Fornecedores</h2>
 
+<form method="post" class="card">
+  <div class="row">
+    <input name="name" placeholder="Nome do fornecedor" required>
+    <select name="supplier_type">
+      <option value="DIRECT">DIRETO</option>
+      <option value="AGENCY">AGÊNCIA</option>
+    </select>
+    <button type="submit">Salvar</button>
+  </div>
+</form>
+
+<table>
+  <thead><tr><th>Fornecedor</th><th>Tipo</th></tr></thead>
+  <tbody>
+    {% for x in items %}
+      <tr><td>{{ x.name }}</td><td>{{ x.supplier_type }}</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}
