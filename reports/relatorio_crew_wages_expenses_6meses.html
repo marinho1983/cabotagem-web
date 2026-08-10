@@ -1,0 +1,309 @@
+<title>ALCOA — Crew Wages & Crew Expenses (6 meses)</title>
+<style>
+  :root{
+    color-scheme: light;
+    --bg:#f4f5f7; --surface:#ffffff; --surface-2:#f7f9fc; --border:#e3e6ec;
+    --ink:#0b0b0b; --ink-2:#52514e; --muted:#8a8f99;
+    --brand:#1F3864; --brand-2:#2a78d6;
+    --pos:#c0392b; --neg:#1e8f5e; /* var: acima do orcado = vermelho (custo), abaixo = verde */
+    --v1:#2a78d6; --v2:#eb6834; --v3:#1baf7a; --v4:#eda100;
+    --rda:#8a8f99;
+    --grid:#eceef2;
+  }
+  :root:not([data-theme="light"]) { }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      color-scheme: dark;
+      --bg:#121316; --surface:#1c1e22; --surface-2:#23262b; --border:#2f333a;
+      --ink:#f4f5f7; --ink-2:#c3c2b7; --muted:#8b929c;
+      --brand:#9db8e8; --brand-2:#3987e5;
+      --pos:#e66767; --neg:#3fb984;
+      --v1:#3987e5; --v2:#d95926; --v3:#199e70; --v4:#c98500;
+      --rda:#8b929c; --grid:#2b2f36;
+    }
+  }
+  :root[data-theme="dark"]{
+    color-scheme: dark;
+    --bg:#121316; --surface:#1c1e22; --surface-2:#23262b; --border:#2f333a;
+    --ink:#f4f5f7; --ink-2:#c3c2b7; --muted:#8b929c;
+    --brand:#9db8e8; --brand-2:#3987e5;
+    --pos:#e66767; --neg:#3fb984;
+    --v1:#3987e5; --v2:#d95926; --v3:#199e70; --v4:#c98500;
+    --rda:#8b929c; --grid:#2b2f36;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
+    line-height:1.5;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1080px;margin:0 auto;padding:32px 20px 72px}
+  header h1{font-size:26px;margin:0 0 4px;letter-spacing:-.02em}
+  header .sub{color:var(--ink-2);font-size:14px}
+  header .src{color:var(--muted);font-size:12px;margin-top:8px}
+  .tag{display:inline-block;background:var(--brand);color:#fff;font-size:12px;font-weight:600;
+    padding:3px 10px;border-radius:999px;margin-bottom:14px}
+  :root[data-theme="dark"] .tag, :root:not([data-theme="light"]) .tag{color:#0b0b0b}
+  @media (prefers-color-scheme:light){:root:not([data-theme="dark"]) .tag{color:#fff}}
+  h2{font-size:15px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-2);
+    margin:38px 0 14px;font-weight:700}
+  .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+  .kpi{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px 16px 14px}
+  .kpi .lbl{font-size:12px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.04em}
+  .kpi .val{font-size:24px;font-weight:700;margin-top:6px;letter-spacing:-.01em}
+  .kpi .note{font-size:12px;color:var(--ink-2);margin-top:4px}
+  .kpi .note.up{color:var(--pos)} .kpi .note.down{color:var(--neg)}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px 18px}
+  .card h3{margin:0 0 2px;font-size:15px}
+  .card .cap{font-size:12px;color:var(--muted);margin:0 0 10px}
+  .legend{display:flex;flex-wrap:wrap;gap:14px;margin:10px 2px 2px;font-size:12px;color:var(--ink-2)}
+  .legend span{display:inline-flex;align-items:center;gap:6px}
+  .sw{width:12px;height:12px;border-radius:3px;display:inline-block}
+  .sw.line{height:3px;width:16px;border-radius:2px}
+  table{width:100%;border-collapse:collapse;font-size:13px;font-variant-numeric:tabular-nums}
+  .card.tbl{overflow-x:auto}
+  th,td{padding:8px 10px;text-align:right;border-bottom:1px solid var(--border);white-space:nowrap}
+  th:first-child,td:first-child{text-align:left}
+  thead th{background:var(--brand);color:#fff;font-weight:600;font-size:12px;position:sticky;top:0}
+  :root[data-theme="dark"] thead th, :root:not([data-theme="light"]) thead th{color:#eaf0fb}
+  tbody tr:nth-child(even){background:var(--surface-2)}
+  tfoot td{font-weight:700;border-top:2px solid var(--border);background:var(--surface-2)}
+  .pos{color:var(--pos)} .neg{color:var(--neg)}
+  svg{display:block;width:100%;height:auto;overflow:visible}
+  .tip{position:fixed;pointer-events:none;background:var(--ink);color:var(--bg);font-size:12px;
+    padding:7px 9px;border-radius:7px;opacity:0;transition:opacity .08s;z-index:9;
+    box-shadow:0 4px 14px rgba(0,0,0,.25);max-width:230px}
+  .tip b{color:var(--surface)}
+  .foot{color:var(--muted);font-size:12px;margin-top:34px;border-top:1px solid var(--border);padding-top:14px}
+  @media (max-width:820px){.kpis{grid-template-columns:repeat(2,1fr)}.grid2{grid-template-columns:1fr}}
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="tag">ALCOA · Custeio</div>
+    <h1>Crew Wages &amp; Crew Expenses — últimos 6 meses</h1>
+    <div class="sub">Frota de 4 navios (Amazon Pioneer, Pathfinder, Commander, Courage) · jan–jun/2026 · valores em R$</div>
+    <div class="src">Fonte: planilhas de custeio ALCOA (SharePoint OPS · <em>0 - Alcoa</em>), aba “Comparação RDA”. RDA = orçado do contrato. Variação positiva = acima do orçado.</div>
+  </header>
+
+  <section class="kpis" id="kpis"></section>
+
+  <h2>Evolução mensal da frota — Realizado vs. RDA</h2>
+  <div class="grid2">
+    <div class="card">
+      <h3>Crew Wages</h3>
+      <p class="cap">Total da frota por mês (R$)</p>
+      <div id="chartCW"></div>
+      <div class="legend">
+        <span><i class="sw line" style="background:var(--v1)"></i>Realizado</span>
+        <span><i class="sw line" style="background:var(--rda)"></i>RDA (orçado)</span>
+      </div>
+    </div>
+    <div class="card">
+      <h3>Crew Expenses</h3>
+      <p class="cap">Total da frota por mês (R$)</p>
+      <div id="chartCE"></div>
+      <div class="legend">
+        <span><i class="sw line" style="background:var(--v2)"></i>Realizado</span>
+        <span><i class="sw line" style="background:var(--rda)"></i>RDA (orçado)</span>
+      </div>
+    </div>
+  </div>
+
+  <h2>Por embarcação — Realizado por mês</h2>
+  <div class="grid2">
+    <div class="card">
+      <h3>Crew Wages por navio</h3>
+      <p class="cap">R$ por navio, por mês</p>
+      <div id="barCW"></div>
+      <div class="legend" id="legV"></div>
+    </div>
+    <div class="card">
+      <h3>Crew Expenses por navio</h3>
+      <p class="cap">R$ por navio, por mês</p>
+      <div id="barCE"></div>
+      <div class="legend" id="legV2"></div>
+    </div>
+  </div>
+
+  <h2>Consolidado mensal da frota</h2>
+  <div class="card tbl"><table id="tblCons"></table></div>
+
+  <h2>Detalhamento por embarcação</h2>
+  <div class="card tbl" style="margin-bottom:16px"><table id="tblCW"></table></div>
+  <div class="card tbl"><table id="tblCE"></table></div>
+
+  <div class="foot">
+    Relatório gerado a partir das planilhas de custeio ALCOA (competências jan–jun/2026). Crew Wages = folha de tripulação
+    (Posidonia Shipping); Crew Expenses = despesas de troca de turma, passagens, hospedagem, transporte, ASO, telemedicina e Starlink.
+    Acompanha a versão em Excel: <em>relatorio_crew_wages_expenses_6meses.xlsx</em>.
+  </div>
+</div>
+
+<div class="tip" id="tip"></div>
+
+<script>
+const MESES = ["jan/26","fev/26","mar/26","abr/26","mai/26","jun/26"];
+const VESSELS = ["Amazon Pioneer","Amazon Pathfinder","Amazon Commander","Amazon Courage"];
+const VC = ["--v1","--v2","--v3","--v4"];
+const CW = {
+ "jan/26":[1817201.65,1782114.86,1804496.48,1888499.79],
+ "fev/26":[1859646.46,1740468.14,1818093.58,1880040.77],
+ "mar/26":[1880769.33,1626429.15,1869611.07,1845655.70],
+ "abr/26":[2113259.61,1777311.43,1873959.36,1856132.46],
+ "mai/26":[1815029.88,1885937.53,1783805.46,1931472.88],
+ "jun/26":[1557299.21,1727304.21,1690427.48,1810653.28]};
+const CE = {
+ "jan/26":[93039.67,142393.07,196417.79,196587.07],
+ "fev/26":[133233.39,134969.06,63243.29,111578.65],
+ "mar/26":[116292.14,138713.04,157621.61,93738.51],
+ "abr/26":[42203.51,170571.37,207825.06,153210.33],
+ "mai/26":[230445.02,244924.94,43192.90,63303.94],
+ "jun/26":[73013.87,21433.34,183386.30,205736.30]};
+const CWB={"jan/26":1730507.65,"fev/26":1730507.66,"mar/26":1730507.66,"abr/26":1717922.14,"mai/26":1717922.14,"jun/26":1717922.14};
+const CEB={"jan/26":85754.83,"fev/26":85754.88,"mar/26":85754.88,"abr/26":85131.21,"mai/26":85131.21,"jun/26":85131.21};
+
+const sum = a => a.reduce((x,y)=>x+y,0);
+const cwReal = MESES.map(m=>sum(CW[m]));
+const ceReal = MESES.map(m=>sum(CE[m]));
+const cwRda  = MESES.map(m=>CWB[m]*4);
+const ceRda  = MESES.map(m=>CEB[m]*4);
+
+const fmt = new Intl.NumberFormat('pt-BR',{maximumFractionDigits:0});
+const fmt2= new Intl.NumberFormat('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
+const brl = v => 'R$ '+fmt.format(v);
+const mi  = v => 'R$ '+fmt2.format(v/1e6)+' mi';
+const cssv= n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+
+const tip = document.getElementById('tip');
+function showTip(html,e){tip.innerHTML=html;tip.style.opacity=1;moveTip(e);}
+function moveTip(e){let x=e.clientX+14,y=e.clientY+14;
+  if(x+tip.offsetWidth>innerWidth)x=e.clientX-tip.offsetWidth-14;
+  if(y+tip.offsetHeight>innerHeight)y=e.clientY-tip.offsetHeight-14;
+  tip.style.left=x+'px';tip.style.top=y+'px';}
+function hideTip(){tip.style.opacity=0;}
+
+/* ---------- KPIs ---------- */
+(function(){
+  const tCW=sum(cwReal), tCE=sum(ceReal), tCWB=sum(cwRda), tCEB=sum(ceRda);
+  const items=[
+    {lbl:'Crew Wages · 6m',val:mi(tCW),note:`RDA ${mi(tCWB)} · +${fmt2.format((tCW-tCWB)/tCWB*100)}%`,cls:'up'},
+    {lbl:'Crew Expenses · 6m',val:mi(tCE),note:`RDA ${mi(tCEB)} · +${fmt2.format((tCE-tCEB)/tCEB*100)}%`,cls:'up'},
+    {lbl:'Total Crew · 6m',val:mi(tCW+tCE),note:`Média ${mi((tCW+tCE)/6)}/mês`,cls:''},
+    {lbl:'Desvio total vs RDA',val:'+'+brl(tCW+tCE-tCWB-tCEB),note:`Wages +${brl(tCW-tCWB)} · Exp. +${brl(tCE-tCEB)}`,cls:'up'},
+  ];
+  document.getElementById('kpis').innerHTML=items.map(i=>
+    `<div class="kpi"><div class="lbl">${i.lbl}</div><div class="val">${i.val}</div><div class="note ${i.cls}">${i.note}</div></div>`).join('');
+})();
+
+/* ---------- line chart: realizado vs rda ---------- */
+function lineChart(el, real, rda, realVar, name){
+  const W=470,H=250,P={t:16,r:16,b:34,l:56};
+  const iw=W-P.l-P.r, ih=H-P.t-P.b;
+  const all=real.concat(rda); let max=Math.max(...all), min=Math.min(...all);
+  const pad=(max-min)*0.15||max*0.1; max+=pad; min=Math.max(0,min-pad);
+  const x=i=>P.l+iw*(i/(MESES.length-1));
+  const y=v=>P.t+ih*(1-(v-min)/(max-min));
+  const ticks=4; let grid='',ylab='';
+  for(let t=0;t<=ticks;t++){const v=min+(max-min)*t/ticks,yy=y(v);
+    grid+=`<line x1="${P.l}" y1="${yy}" x2="${W-P.r}" y2="${yy}" stroke="${cssv('--grid')}" stroke-width="1"/>`;
+    ylab+=`<text x="${P.l-8}" y="${yy+4}" text-anchor="end" font-size="10" fill="${cssv('--muted')}">${fmt2.format(v/1e6)}</text>`;}
+  const xlab=MESES.map((m,i)=>`<text x="${x(i)}" y="${H-14}" text-anchor="middle" font-size="11" fill="${cssv('--ink-2')}">${m}</text>`).join('');
+  const path=arr=>arr.map((v,i)=>(i?'L':'M')+x(i)+' '+y(v)).join(' ');
+  // RDA dashed
+  let svg=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${name}">`;
+  svg+=grid+ylab+xlab;
+  svg+=`<text x="2" y="${P.t-4}" font-size="9" fill="${cssv('--muted')}">R$ mi</text>`;
+  svg+=`<path d="${path(rda)}" fill="none" stroke="${cssv('--rda')}" stroke-width="2" stroke-dasharray="5 4"/>`;
+  svg+=`<path d="${path(real)}" fill="none" stroke="${cssv(realVar)}" stroke-width="2.5"/>`;
+  real.forEach((v,i)=>{svg+=`<circle cx="${x(i)}" cy="${y(v)}" r="4" fill="${cssv('--surface')}" stroke="${cssv(realVar)}" stroke-width="2.5"/>`;});
+  // hover hit areas
+  MESES.forEach((m,i)=>{
+    svg+=`<rect x="${x(i)-iw/12}" y="${P.t}" width="${iw/6}" height="${ih}" fill="transparent" data-i="${i}"/>`;
+  });
+  el.innerHTML=svg;
+  const s=el.querySelector('svg');
+  s.querySelectorAll('rect[data-i]').forEach(r=>{
+    r.addEventListener('mousemove',e=>{const i=+r.dataset.i;
+      const d=real[i]-rda[i];const cl=d>=0?'pos':'neg';
+      showTip(`<b>${MESES[i]}</b><br>Realizado: ${brl(real[i])}<br>RDA: ${brl(rda[i])}<br><span class="${cl}">Var: ${d>=0?'+':''}${brl(d)}</span>`,e);});
+    r.addEventListener('mouseleave',hideTip);
+  });
+}
+
+/* ---------- grouped bar: per vessel ---------- */
+function groupBar(el, dataMap, name){
+  const W=470,H=260,P={t:16,r:12,b:34,l:52};
+  const iw=W-P.l-P.r, ih=H-P.t-P.b;
+  let max=0; MESES.forEach(m=>dataMap[m].forEach(v=>max=Math.max(max,v)));
+  max*= 1.12;
+  const gb=iw/MESES.length, bw=gb*0.19, gap=gb*0.04;
+  const y=v=>P.t+ih*(1-v/max);
+  const ticks=4; let grid='',ylab='';
+  for(let t=0;t<=ticks;t++){const v=max*t/ticks,yy=y(v);
+    grid+=`<line x1="${P.l}" y1="${yy}" x2="${W-P.r}" y2="${yy}" stroke="${cssv('--grid')}" stroke-width="1"/>`;
+    ylab+=`<text x="${P.l-8}" y="${yy+4}" text-anchor="end" font-size="10" fill="${cssv('--muted')}">${fmt2.format(v/1e6)}</text>`;}
+  let bars='';
+  MESES.forEach((m,i)=>{
+    const gx=P.l+gb*i+ (gb-(bw*4+gap*3))/2;
+    dataMap[m].forEach((v,j)=>{
+      const bx=gx+j*(bw+gap), by=y(v), bh=P.t+ih-by;
+      bars+=`<rect x="${bx.toFixed(1)}" y="${by.toFixed(1)}" width="${bw.toFixed(1)}" height="${Math.max(0,bh).toFixed(1)}" rx="2" fill="${cssv(VC[j])}" data-m="${i}" data-j="${j}"/>`;
+    });
+  });
+  const xlab=MESES.map((m,i)=>`<text x="${P.l+gb*i+gb/2}" y="${H-14}" text-anchor="middle" font-size="11" fill="${cssv('--ink-2')}">${m}</text>`).join('');
+  el.innerHTML=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${name}"><text x="2" y="${P.t-4}" font-size="9" fill="${cssv('--muted')}">R$ mi</text>${grid}${ylab}${bars}${xlab}</svg>`;
+  el.querySelectorAll('rect[data-m]').forEach(r=>{
+    r.addEventListener('mousemove',e=>{const i=+r.dataset.m,j=+r.dataset.j;
+      showTip(`<b>${VESSELS[j]}</b><br>${MESES[i]}: ${brl(dataMap[MESES[i]][j])}`,e);});
+    r.addEventListener('mouseleave',hideTip);
+  });
+}
+
+function drawAll(){
+  lineChart(document.getElementById('chartCW'),cwReal,cwRda,'--v1','Crew Wages');
+  lineChart(document.getElementById('chartCE'),ceReal,ceRda,'--v2','Crew Expenses');
+  groupBar(document.getElementById('barCW'),CW,'Crew Wages por navio');
+  groupBar(document.getElementById('barCE'),CE,'Crew Expenses por navio');
+}
+drawAll();
+const leg=VESSELS.map((v,j)=>`<span><i class="sw" style="background:var(${VC[j]})"></i>${v}</span>`).join('');
+document.getElementById('legV').innerHTML=leg;
+document.getElementById('legV2').innerHTML=leg;
+
+/* ---------- tables ---------- */
+function varCell(d){const cl=d>=0?'pos':'neg';return `<td class="${cl}">${d>=0?'+':''}${fmt.format(d)}</td>`;}
+(function(){
+  let rows='';
+  MESES.forEach((m,i)=>{
+    const cw=cwReal[i],ce=ceReal[i],cwb=cwRda[i],ceb=ceRda[i];
+    rows+=`<tr><td>${m}</td><td>${fmt.format(cw)}</td><td>${fmt.format(cwb)}</td>${varCell(cw-cwb)}
+      <td>${fmt.format(ce)}</td><td>${fmt.format(ceb)}</td>${varCell(ce-ceb)}<td>${fmt.format(cw+ce)}</td></tr>`;
+  });
+  const tCW=sum(cwReal),tCE=sum(ceReal),tCWB=sum(cwRda),tCEB=sum(ceRda);
+  document.getElementById('tblCons').innerHTML=
+   `<thead><tr><th>Mês</th><th>CW Realiz.</th><th>CW RDA</th><th>CW Var.</th><th>CE Realiz.</th><th>CE RDA</th><th>CE Var.</th><th>Total Crew</th></tr></thead>
+    <tbody>${rows}</tbody>
+    <tfoot><tr><td>TOTAL</td><td>${fmt.format(tCW)}</td><td>${fmt.format(tCWB)}</td><td class="pos">+${fmt.format(tCW-tCWB)}</td>
+    <td>${fmt.format(tCE)}</td><td>${fmt.format(tCEB)}</td><td class="pos">+${fmt.format(tCE-tCEB)}</td><td>${fmt.format(tCW+tCE)}</td></tr></tfoot>`;
+})();
+
+function vesselTable(id,dataMap,label){
+  let rows='';
+  MESES.forEach(m=>{
+    const v=dataMap[m],t=sum(v);
+    rows+=`<tr><td>${m}</td>${v.map(x=>`<td>${fmt.format(x)}</td>`).join('')}<td>${fmt.format(t)}</td></tr>`;
+  });
+  const tot=VESSELS.map((_,j)=>sum(MESES.map(m=>dataMap[m][j])));
+  document.getElementById(id).innerHTML=
+   `<thead><tr><th>${label} — Mês</th>${VESSELS.map(v=>`<th>${v.replace('Amazon ','')}</th>`).join('')}<th>Total</th></tr></thead>
+    <tbody>${rows}</tbody>
+    <tfoot><tr><td>TOTAL</td>${tot.map(x=>`<td>${fmt.format(x)}</td>`).join('')}<td>${fmt.format(sum(tot))}</td></tr></tfoot>`;
+}
+vesselTable('tblCW',CW,'Crew Wages');
+vesselTable('tblCE',CE,'Crew Expenses');
+
+/* redraw on theme change / resize */
+matchMedia('(prefers-color-scheme:dark)').addEventListener('change',drawAll);
+new MutationObserver(drawAll).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
+let rt;addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(drawAll,150);});
+</script>
