@@ -1,0 +1,365 @@
+<title>Posidonia — Custeio ALCOA · Crew Wages & Crew Expenses (6 meses)</title>
+<style>
+  :root{
+    --navy:#0b2a4a; --navy2:#123a63; --accent:#0e9aa7;
+    --ink:#0f1720; --ink2:#46586c; --muted:#8a99ab;
+    --surface:#ffffff; --panel:#f2f6fa; --panel2:#e9eff6; --border:#dde6ef;
+    --wages:#1f5fa8; --exp:#0e9aa7; --rda:#9aa8b8;
+    --eco:#1e8f5e; --est:#c0392b;
+    --v1:#2a78d6; --v2:#eb6834; --v3:#1baf7a; --v4:#eda100;
+    --grid:#e7eef5;
+  }
+  *{box-sizing:border-box;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  @page{ size:13.333in 7.5in; margin:0; }
+  html,body{margin:0;padding:0;background:#5b6b7c}
+  @media print{ html,body{background:#fff} .slide{margin:0} }
+  body{font-family:"Segoe UI",-apple-system,BlinkMacSystemFont,Roboto,Arial,sans-serif;color:var(--ink)}
+  .slide{position:relative;width:1280px;height:720px;background:var(--surface);overflow:hidden;
+    margin:0 auto;page-break-after:always;break-after:page}
+  .slide:last-child{page-break-after:auto}
+  .pad{position:absolute;inset:0;padding:52px 64px 64px}
+  /* eyebrow + title */
+  .eyebrow{font-size:13px;letter-spacing:.42em;font-weight:700;color:var(--accent);text-transform:uppercase}
+  h1.title{font-size:34px;font-weight:800;margin:6px 0 2px;letter-spacing:-.01em;color:var(--navy)}
+  .lede{font-size:15px;color:var(--ink2);max-width:1050px}
+  /* footer */
+  .foot{position:absolute;left:64px;right:64px;bottom:24px;display:flex;justify-content:space-between;
+    align-items:center;font-size:11.5px;color:var(--muted);border-top:1px solid var(--border);padding-top:10px}
+  .foot .brand{font-weight:800;letter-spacing:.24em;color:var(--navy)}
+  .foot .brand span{color:var(--accent)}
+  .pg{font-variant-numeric:tabular-nums}
+  /* cover */
+  .cover{background:linear-gradient(120deg,#0b2a4a 0%,#123a63 55%,#0e9aa7 140%);color:#fff}
+  .cover .wm{position:absolute;right:-60px;bottom:-70px;font-size:520px;font-weight:800;color:rgba(255,255,255,.05);letter-spacing:-.04em;line-height:.8}
+  .cover .anchor{position:absolute;right:70px;top:64px;font-size:38px;opacity:.5}
+  .cover-in{position:absolute;left:72px;top:210px;right:72px}
+  .cover .kick{font-size:15px;letter-spacing:.5em;color:#7fdbe6;font-weight:700}
+  .cover h1{font-size:62px;font-weight:800;line-height:1.02;margin:14px 0 10px;letter-spacing:-.02em}
+  .cover .sub{font-size:20px;color:#d7e3ee;font-weight:500}
+  .cover .fleet{font-size:15px;color:#9fb6cc;margin-top:18px;letter-spacing:.02em}
+  .cover .tl{position:absolute;left:72px;bottom:60px;font-size:15px;color:#bfe7ec;font-weight:600;letter-spacing:.06em}
+  .cover .wordmark{position:absolute;left:72px;top:64px;font-size:24px;font-weight:800;letter-spacing:.26em;color:#fff}
+  .cover .wordmark span{color:#7fdbe6}
+  /* kpi */
+  .kpis{display:grid;gap:16px;margin-top:22px}
+  .kpis.k4{grid-template-columns:repeat(4,1fr)} .kpis.k3{grid-template-columns:repeat(3,1fr)}
+  .kpi{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:16px 18px}
+  .kpi .l{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+  .kpi .v{font-size:30px;font-weight:800;color:var(--navy);margin-top:6px;letter-spacing:-.01em;font-variant-numeric:tabular-nums;white-space:nowrap}
+  .kpis.k3 .kpi .v{font-size:27px}
+  .kpi .n{font-size:12.5px;color:var(--ink2);margin-top:3px}
+  .est{color:var(--est);font-weight:700} .eco{color:var(--eco);font-weight:700}
+  /* layout cols */
+  .two{display:grid;grid-template-columns:1.28fr .72fr;gap:30px;margin-top:20px}
+  .card{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:16px 18px}
+  .card h3{margin:0 0 2px;font-size:15px;color:var(--navy)}
+  .card .cap{font-size:11.5px;color:var(--muted);margin:0 0 6px}
+  .legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:8px;font-size:12px;color:var(--ink2)}
+  .legend span{display:inline-flex;align-items:center;gap:6px}
+  .sw{width:12px;height:12px;border-radius:3px} .sw.line{width:16px;height:3px;border-radius:2px}
+  ul.notes{margin:6px 0 0;padding-left:0;list-style:none}
+  ul.notes li{position:relative;padding:7px 0 7px 16px;font-size:13.5px;color:var(--ink2);border-bottom:1px solid var(--border)}
+  ul.notes li:last-child{border-bottom:0}
+  ul.notes li::before{content:"";position:absolute;left:0;top:13px;width:6px;height:6px;border-radius:50%;background:var(--accent)}
+  ul.notes li b{color:var(--ink)}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:26px;margin-top:18px}
+  .cause{background:var(--panel);border:1px solid var(--border);border-left:4px solid var(--est);border-radius:10px;padding:13px 16px;margin-bottom:12px}
+  .cause.eco{border-left-color:var(--eco)}
+  .cause h4{margin:0 0 3px;font-size:14px;color:var(--navy)}
+  .cause p{margin:0;font-size:12.8px;color:var(--ink2);line-height:1.45}
+  .rec{display:flex;gap:14px;align-items:flex-start;background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:14px 16px;margin-bottom:12px}
+  .rec .num{flex:0 0 34px;height:34px;border-radius:9px;background:var(--navy);color:#fff;font-weight:800;
+    display:flex;align-items:center;justify-content:center;font-size:16px}
+  .rec h4{margin:0 0 2px;font-size:14px;color:var(--navy)} .rec p{margin:0;font-size:12.6px;color:var(--ink2);line-height:1.4}
+  .close{background:linear-gradient(120deg,#0b2a4a,#123a63 60%,#0e9aa7 150%);color:#fff}
+  .close .c{position:absolute;left:72px;top:280px}
+  .close h2{font-size:52px;font-weight:800;margin:0} .close .t{font-size:20px;color:#bfe7ec;margin-top:12px;letter-spacing:.06em}
+  .close .u{position:absolute;left:72px;bottom:60px;font-size:15px;color:#9fb6cc;letter-spacing:.08em}
+  svg{display:block;width:100%;height:auto}
+  .datatbl{width:100%;border-collapse:collapse;font-size:12px;font-variant-numeric:tabular-nums;margin-top:4px}
+  .datatbl th,.datatbl td{padding:5px 8px;text-align:right;border-bottom:1px solid var(--border)}
+  .datatbl th:first-child,.datatbl td:first-child{text-align:left}
+  .datatbl thead th{color:#fff;background:var(--navy);font-size:11px;font-weight:600}
+</style>
+
+<!-- ================= SLIDE 1 · COVER ================= -->
+<section class="slide cover">
+  <div class="wordmark">POSIDO<span>NIA</span></div>
+  <div class="anchor">⚓</div>
+  <div class="wm">P</div>
+  <div class="cover-in">
+    <div class="kick">APRESENTAÇÃO GERENCIAL</div>
+    <h1>Crew Wages &amp;<br>Crew Expenses</h1>
+    <div class="sub">Custeio ALCOA — últimos 6 meses · jan–jun 2026</div>
+    <div class="fleet">Frota Amazon · Pioneer · Pathfinder · Commander · Courage</div>
+  </div>
+  <div class="tl">Reshaping the Shipping Industry</div>
+</section>
+
+<!-- ================= SLIDE 2 · PANORAMA ================= -->
+<section class="slide">
+  <div class="pad">
+    <div class="eyebrow">Panorama</div>
+    <h1 class="title">Sumário executivo — 6 meses</h1>
+    <div class="lede">Consolidado das duas rubricas de pessoal da frota (4 navios), competências jan–jun/2026. Referência: <b>RDA</b> (provisão do contrato). Convenção Posidonia: <span class="eco">verde = economia</span>, <span class="est">vermelho = estouro</span>.</div>
+    <div class="kpis k4" id="kpi2"></div>
+    <div class="two" style="grid-template-columns:1fr 1fr;margin-top:26px">
+      <div class="card"><h3>Leitura do período</h3>
+        <ul class="notes">
+          <li><b>Crew Wages</b> fechou <span class="est">R$ 2,25 mi acima do RDA (−5,4%)</span> — 5 dos 6 meses acima da provisão; só <b>jun</b> veio abaixo.</li>
+          <li><b>Crew Expenses</b> estourou <span class="est">R$ 1,17 mi (−56,9%)</span> — desvio em <b>todos</b> os meses: a provisão segue abaixo do realizado.</li>
+        </ul>
+      </div>
+      <div class="card"><h3>Mensagem</h3>
+        <ul class="notes">
+          <li>O custo de pessoal é dominado por <b>Crew Wages</b> (93% do total); a variação vem de <b>folgas indenizadas, dobras e feriados</b> agravados pela espera nos portos.</li>
+          <li><b>Crew Expenses</b> é pequeno mas <b>muito volátil</b> (troca de turma casada ao line-up) — o desvio recorrente é de <b>base de provisão</b>, não só de logística.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><div class="brand">POSIDO<span>NIA</span> · Custeio ALCOA · Crew Wages &amp; Expenses · jan–jun 2026</div><div class="pg">2</div></div>
+</section>
+
+<!-- ================= SLIDE 3 · CREW WAGES ================= -->
+<section class="slide">
+  <div class="pad">
+    <div class="eyebrow">Financeiro</div>
+    <h1 class="title">Crew Wages — evolução mensal · Realizado × RDA</h1>
+    <div class="two">
+      <div class="card"><h3>Total da frota por mês</h3><p class="cap">R$ milhões · barras = Realizado · linha tracejada = RDA (provisão)</p>
+        <div id="chW"></div>
+        <div class="legend"><span><i class="sw" style="background:var(--wages)"></i>Realizado</span><span><i class="sw line" style="background:var(--rda)"></i>RDA (provisão)</span></div>
+      </div>
+      <div>
+        <div class="kpis k3" id="kpiW"></div>
+        <div class="card" style="margin-top:16px"><h3>Destaques</h3>
+          <ul class="notes">
+            <li>Pico em <b>abr/26</b>: R$ 7,62 mi (+10,9% vs RDA), puxado pelo <b>Pioneer (R$ 2,11 mi)</b>.</li>
+            <li><b>jun/26</b> foi o único mês <span class="eco">abaixo do RDA</span> (−R$ 86 mil).</li>
+            <li>Média de <b>R$ 1,82 mi por navio/mês</b>; amplitude pequena entre navios.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><div class="brand">POSIDO<span>NIA</span> · Custeio ALCOA · Crew Wages &amp; Expenses · jan–jun 2026</div><div class="pg">3</div></div>
+</section>
+
+<!-- ================= SLIDE 4 · CREW EXPENSES ================= -->
+<section class="slide">
+  <div class="pad">
+    <div class="eyebrow">Financeiro</div>
+    <h1 class="title">Crew Expenses — evolução mensal · Realizado × RDA</h1>
+    <div class="two">
+      <div class="card"><h3>Total da frota por mês</h3><p class="cap">R$ mil · barras = Realizado · linha tracejada = RDA (provisão)</p>
+        <div id="chE"></div>
+        <div class="legend"><span><i class="sw" style="background:var(--exp)"></i>Realizado</span><span><i class="sw line" style="background:var(--rda)"></i>RDA (provisão)</span></div>
+      </div>
+      <div>
+        <div class="kpis k3" id="kpiE"></div>
+        <div class="card" style="margin-top:16px"><h3>Destaques</h3>
+          <ul class="notes">
+            <li>Estouro em <b>6 de 6 meses</b>; pico em <b>mai/26</b> (+R$ 241 mil).</li>
+            <li>Composição: passagens, hospedagem e transporte de <b>troca de turma</b>, mais <b>Starlink, ASO e telemedicina</b>.</li>
+            <li>Representa apenas <b>7,4%</b> do Crew Wages, mas com dispersão mensal de <b>~4×</b> (R$ 443 mil → nenhum mês no RDA).</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><div class="brand">POSIDO<span>NIA</span> · Custeio ALCOA · Crew Wages &amp; Expenses · jan–jun 2026</div><div class="pg">4</div></div>
+</section>
+
+<!-- ================= SLIDE 5 · VARIAÇÃO MENSAL ================= -->
+<section class="slide">
+  <div class="pad">
+    <div class="eyebrow">Financeiro</div>
+    <h1 class="title">Variação vs RDA por mês — estouro × economia</h1>
+    <div class="lede">Barras = Realizado − RDA. <span class="est">Vermelho = estouro</span> (acima da provisão), <span class="eco">verde = economia</span>.</div>
+    <div class="grid2" style="margin-top:22px">
+      <div class="card"><h3>Crew Wages</h3><p class="cap">R$ mil · desvio mensal da frota vs RDA</p><div id="vW"></div></div>
+      <div class="card"><h3>Crew Expenses</h3><p class="cap">R$ mil · desvio mensal da frota vs RDA</p><div id="vE"></div></div>
+    </div>
+    <div class="kpis k4" id="kpiV" style="margin-top:22px"></div>
+  </div>
+  <div class="foot"><div class="brand">POSIDO<span>NIA</span> · Custeio ALCOA · Crew Wages &amp; Expenses · jan–jun 2026</div><div class="pg">5</div></div>
+</section>
+
+<!-- ================= SLIDE 6 · POR EMBARCAÇÃO ================= -->
+<section class="slide">
+  <div class="pad">
+    <div class="eyebrow">Por embarcação</div>
+    <h1 class="title">Crew Wages e Crew Expenses por navio — 6 meses</h1>
+    <div class="grid2" style="margin-top:20px">
+      <div class="card"><h3>Crew Wages acumulado</h3><p class="cap">R$ milhões · soma jan–jun por navio</p><div id="bW"></div></div>
+      <div class="card"><h3>Crew Expenses acumulado</h3><p class="cap">R$ mil · soma jan–jun por navio</p><div id="bE"></div></div>
+    </div>
+    <div class="two" style="grid-template-columns:1fr 1fr;margin-top:20px">
+      <div class="card"><ul class="notes" style="margin:0">
+        <li><b>Courage</b> lidera o Crew Wages (R$ 11,21 mi); <b>Pathfinder</b> o menor (R$ 10,54 mi) — diferença de só <b>6,4%</b>.</li>
+        <li>Custo de pessoal <b>muito homogêneo</b> entre navios: escala idêntica de tripulação e ciclo.</li>
+      </ul></div>
+      <div class="card"><ul class="notes" style="margin:0">
+        <li>Em Crew Expenses a dispersão é maior: <b>Pathfinder</b> o mais alto (R$ 853 mil), <b>Pioneer</b> o mais baixo (R$ 688 mil).</li>
+        <li>Reflete o <b>calendário de trocas de turma</b> de cada navio no semestre, não estrutura de custo.</li>
+      </ul></div>
+    </div>
+  </div>
+  <div class="foot"><div class="brand">POSIDO<span>NIA</span> · Custeio ALCOA · Crew Wages &amp; Expenses · jan–jun 2026</div><div class="pg">6</div></div>
+</section>
+
+<!-- ================= SLIDE 7 · GESTÃO — CAUSAS ================= -->
+<section class="slide">
+  <div class="pad">
+    <div class="eyebrow">Gestão</div>
+    <h1 class="title">Causas dos desvios e pontos de atenção</h1>
+    <div class="grid2" style="margin-top:22px">
+      <div>
+        <div class="cause"><h4>Crew Wages · estouro de R$ 2,25 mi (−5,4%)</h4><p>Folgas indenizadas, dobras e movimentações para garantir a Tripulação Mínima de Segurança (CTS), além de feriados com tripulação embarcada — agravados pela espera nos portos (line-up).</p></div>
+        <div class="cause"><h4>Crew Expenses · estouro de R$ 1,17 mi (−56,9%)</h4><p>Logística de troca de turma casada ao line-up (passagens, hospedagem, transporte), somada a Starlink, ASO e atendimento médico emergencial. A provisão segue estruturalmente abaixo do realizado.</p></div>
+      </div>
+      <div>
+        <div class="cause eco"><h4>Sazonalidade e competência</h4><p>Parte dos custos migra de mês por fechamento de folha e emissão de notas (ex.: impactos de maio lançados em junho) — comparações mês a mês exigem leitura do acumulado.</p></div>
+        <div class="cause"><h4>Base de provisão desalinhada</h4><p>Crew Expenses estourou nos 6 meses e Crew Wages em 5 — dois padrões persistentes que indicam <b>provisão desatualizada</b>, não apenas eventos pontuais de operação.</p></div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><div class="brand">POSIDO<span>NIA</span> · Custeio ALCOA · Crew Wages &amp; Expenses · jan–jun 2026</div><div class="pg">7</div></div>
+</section>
+
+<!-- ================= SLIDE 8 · GESTÃO — RECOMENDAÇÕES ================= -->
+<section class="slide">
+  <div class="pad">
+    <div class="eyebrow">Gestão</div>
+    <h1 class="title">Recomendações</h1>
+    <div class="grid2" style="margin-top:22px">
+      <div>
+        <div class="rec"><div class="num">1</div><div><h4>Revisar a base de provisão (RDA) de Crew Expenses</h4><p>Seis meses seguidos de estouro na mesma direção indicam provisão desalinhada. Recalibrar a base melhora a leitura do saving e a previsibilidade do custeio.</p></div></div>
+        <div class="rec"><div class="num">2</div><div><h4>Atacar a espera portuária (line-up)</h4><p>Fundeio e paradas de terminal puxam dobras e folgas indenizadas em Crew Wages. Trabalhar a janela de berço é o maior ganho disponível de custo de pessoal.</p></div></div>
+      </div>
+      <div>
+        <div class="rec"><div class="num">3</div><div><h4>Planejar trocas de turma por line-up</h4><p>Antecipar a troca ao ponto de menor custo logístico reduz passagens de última hora e diárias — a rubrica mais volátil do semestre.</p></div></div>
+        <div class="rec"><div class="num">4</div><div><h4>Acompanhar por acumulado, não só mês a mês</h4><p>Deslocamentos de competência entre meses distorcem a leitura mensal. O acompanhamento por trimestre/semestre dá o sinal correto de tendência.</p></div></div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><div class="brand">POSIDO<span>NIA</span> · Custeio ALCOA · Crew Wages &amp; Expenses · jan–jun 2026</div><div class="pg">8</div></div>
+</section>
+
+<!-- ================= SLIDE 9 · CLOSE ================= -->
+<section class="slide close">
+  <div class="wordmark" style="position:absolute;left:72px;top:64px;font-size:24px;font-weight:800;letter-spacing:.26em;color:#fff">POSIDO<span style="color:#7fdbe6">NIA</span></div>
+  <div class="c"><h2>Obrigado.</h2><div class="t">Reshaping the Shipping Industry</div></div>
+  <div class="u">www.posidoniashipping.com</div>
+</section>
+
+<script>
+const MESES=["jan/26","fev/26","mar/26","abr/26","mai/26","jun/26"];
+const VESSELS=["Pioneer","Pathfinder","Commander","Courage"];
+const VC=["--v1","--v2","--v3","--v4"];
+const CW={jan:[1817201.65,1782114.86,1804496.48,1888499.79],fev:[1859646.46,1740468.14,1818093.58,1880040.77],
+ mar:[1880769.33,1626429.15,1869611.07,1845655.70],abr:[2113259.61,1777311.43,1873959.36,1856132.46],
+ mai:[1815029.88,1885937.53,1783805.46,1931472.88],jun:[1557299.21,1727304.21,1690427.48,1810653.28]};
+const CE={jan:[93039.67,142393.07,196417.79,196587.07],fev:[133233.39,134969.06,63243.29,111578.65],
+ mar:[116292.14,138713.04,157621.61,93738.51],abr:[42203.51,170571.37,207825.06,153210.33],
+ mai:[230445.02,244924.94,43192.90,63303.94],jun:[73013.87,21433.34,183386.30,205736.30]};
+const K=["jan","fev","mar","abr","mai","jun"];
+const CWB=[1730507.65,1730507.66,1730507.66,1717922.14,1717922.14,1717922.14].map(x=>x*4);
+const CEB=[85754.83,85754.88,85754.88,85131.21,85131.21,85131.21].map(x=>x*4);
+const sum=a=>a.reduce((x,y)=>x+y,0);
+const cwR=K.map(k=>sum(CW[k])), ceR=K.map(k=>sum(CE[k]));
+const cssv=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const nf0=new Intl.NumberFormat('pt-BR',{maximumFractionDigits:0});
+const nf1=new Intl.NumberFormat('pt-BR',{minimumFractionDigits:1,maximumFractionDigits:1});
+const nf2=new Intl.NumberFormat('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
+const mi=v=>nf2.format(v/1e6), thou=v=>nf0.format(v/1e3);
+
+/* bars + rda reference line (values scaled by `sc`, label fmt) */
+function barLine(el,real,rda,color,sc,lab){
+  const W=560,H=290,P={t:20,r:16,b:34,l:52},iw=W-P.l-P.r,ih=H-P.t-P.b;
+  const max=Math.max(...real,...rda)*1.14, min=0;
+  const bw=iw/real.length*0.52, step=iw/real.length;
+  const y=v=>P.t+ih*(1-(v-min)/(max-min));
+  let g='',yl='';
+  for(let t=0;t<=4;t++){const v=max*t/4,yy=y(v);
+    g+=`<line x1="${P.l}" y1="${yy}" x2="${W-P.r}" y2="${yy}" stroke="${cssv('--grid')}"/>`;
+    yl+=`<text x="${P.l-8}" y="${yy+4}" text-anchor="end" font-size="11" fill="${cssv('--muted')}">${lab(v)}</text>`;}
+  let bars='',pts='';
+  real.forEach((v,i)=>{const cx=P.l+step*i+step/2,by=y(v),bh=P.t+ih-by;
+    bars+=`<rect x="${cx-bw/2}" y="${by}" width="${bw}" height="${bh}" rx="3" fill="${cssv(color)}"/>`;
+    bars+=`<text x="${cx}" y="${by-6}" text-anchor="middle" font-size="11" font-weight="700" fill="${cssv('--navy')}">${lab(v)}</text>`;
+    pts+=(i?'L':'M')+cx+' '+y(rda[i])+' ';});
+  const xl=MESES.map((m,i)=>`<text x="${P.l+step*i+step/2}" y="${H-12}" text-anchor="middle" font-size="12" fill="${cssv('--ink2')}">${m}</text>`).join('');
+  el.innerHTML=`<svg viewBox="0 0 ${W} ${H}">${g}${yl}${bars}<path d="${pts}" fill="none" stroke="${cssv('--rda')}" stroke-width="2.5" stroke-dasharray="6 5"/>${real.map((v,i)=>`<circle cx="${P.l+step*i+step/2}" cy="${y(rda[i])}" r="3.2" fill="${cssv('--rda')}"/>`).join('')}${xl}</svg>`;
+}
+/* diverging vertical bars (value can be +/-) */
+function diverge(el,vals,sc,lab){
+  const W=560,H=250,P={t:24,r:16,b:30,l:54},iw=W-P.l-P.r,ih=H-P.t-P.b;
+  const m=Math.max(...vals.map(Math.abs))*1.2||1;
+  const step=iw/vals.length,bw=step*0.5;
+  const y=v=>P.t+ih*(1-(v+m)/(2*m));
+  const zero=y(0);
+  let g='';
+  g+=`<line x1="${P.l}" y1="${zero}" x2="${W-P.r}" y2="${zero}" stroke="${cssv('--ink2')}"/>`;
+  [m,m/2,-m/2,-m].forEach(v=>{const yy=y(v);g+=`<text x="${P.l-8}" y="${yy+4}" text-anchor="end" font-size="10.5" fill="${cssv('--muted')}">${lab(v)}</text>`;});
+  let bars='';
+  vals.forEach((v,i)=>{const cx=P.l+step*i+step/2;const col=v>=0?cssv('--est'):cssv('--eco');
+    const top=v>=0?y(v):zero,h=Math.abs(zero-y(v));
+    bars+=`<rect x="${cx-bw/2}" y="${top}" width="${bw}" height="${h}" rx="3" fill="${col}"/>`;
+    const ly=v>=0?y(v)-6:y(v)+14;
+    bars+=`<text x="${cx}" y="${ly}" text-anchor="middle" font-size="10.5" font-weight="700" fill="${col}">${v>=0?'+':'−'}${lab(Math.abs(v))}</text>`;});
+  const xl=MESES.map((mo,i)=>`<text x="${P.l+step*i+step/2}" y="${H-10}" text-anchor="middle" font-size="12" fill="${cssv('--ink2')}">${mo}</text>`).join('');
+  el.innerHTML=`<svg viewBox="0 0 ${W} ${H}">${g}${bars}${xl}</svg>`;
+}
+/* simple vertical bars per vessel */
+function vbar(el,vals,lab){
+  const W=560,H=260,P={t:24,r:16,b:34,l:54},iw=W-P.l-P.r,ih=H-P.t-P.b;
+  const max=Math.max(...vals)*1.16,step=iw/vals.length,bw=step*0.46;
+  const y=v=>P.t+ih*(1-v/max);
+  let g='',yl='';
+  for(let t=0;t<=4;t++){const v=max*t/4,yy=y(v);g+=`<line x1="${P.l}" y1="${yy}" x2="${W-P.r}" y2="${yy}" stroke="${cssv('--grid')}"/>`;
+    yl+=`<text x="${P.l-8}" y="${yy+4}" text-anchor="end" font-size="11" fill="${cssv('--muted')}">${lab(v)}</text>`;}
+  let bars='';
+  vals.forEach((v,i)=>{const cx=P.l+step*i+step/2,by=y(v);
+    bars+=`<rect x="${cx-bw/2}" y="${by}" width="${bw}" height="${P.t+ih-by}" rx="3" fill="${cssv(VC[i])}"/>`;
+    bars+=`<text x="${cx}" y="${by-7}" text-anchor="middle" font-size="12" font-weight="700" fill="${cssv('--navy')}">${lab(v)}</text>`;});
+  const xl=VESSELS.map((s,i)=>`<text x="${P.l+step*i+step/2}" y="${H-12}" text-anchor="middle" font-size="12.5" fill="${cssv('--ink2')}">${s}</text>`).join('');
+  el.innerHTML=`<svg viewBox="0 0 ${W} ${H}">${g}${yl}${bars}${xl}</svg>`;
+}
+function kpi(el,items){el.innerHTML=items.map(i=>`<div class="kpi"><div class="l">${i.l}</div><div class="v">${i.v}</div><div class="n">${i.n||''}</div></div>`).join('');}
+
+/* --- render --- */
+const tCW=sum(cwR),tCE=sum(ceR),tCWB=sum(CWB),tCEB=sum(CEB);
+kpi(document.getElementById('kpi2'),[
+ {l:'Crew Wages · 6m',v:'R$ '+mi(tCW)+' mi',n:'<span class="est">+'+nf1.format((tCW-tCWB)/tCWB*100)+'% vs RDA</span>'},
+ {l:'Crew Expenses · 6m',v:'R$ '+mi(tCE)+' mi',n:'<span class="est">+'+nf1.format((tCE-tCEB)/tCEB*100)+'% vs RDA</span>'},
+ {l:'Total Crew · 6m',v:'R$ '+mi(tCW+tCE)+' mi',n:'Média R$ '+mi((tCW+tCE)/6)+' mi/mês'},
+ {l:'Estouro total vs RDA',v:'R$ '+mi(tCW+tCE-tCWB-tCEB)+' mi',n:'Wages R$ 2,25 mi · Exp. R$ 1,17 mi'}]);
+
+barLine(document.getElementById('chW'),cwR,CWB,'--wages',1e6,v=>nf1.format(v/1e6));
+barLine(document.getElementById('chE'),ceR,CEB,'--exp',1e3,v=>nf0.format(v/1e3));
+kpi(document.getElementById('kpiW'),[
+ {l:'Realiz. 6m · R$ mi',v:mi(tCW)},
+ {l:'vs RDA',v:'<span class="est">+'+nf1.format((tCW-tCWB)/tCWB*100)+'%</span>'},
+ {l:'Média/mês · R$ mi',v:mi(tCW/6)}]);
+kpi(document.getElementById('kpiE'),[
+ {l:'Realiz. 6m · R$ mi',v:mi(tCE)},
+ {l:'vs RDA',v:'<span class="est">+'+nf0.format((tCE-tCEB)/tCEB*100)+'%</span>'},
+ {l:'Média/mês · R$ mil',v:nf0.format(tCE/6/1e3)}]);
+
+diverge(document.getElementById('vW'),cwR.map((v,i)=>v-CWB[i]),1e3,v=>nf0.format(v/1e3));
+diverge(document.getElementById('vE'),ceR.map((v,i)=>v-CEB[i]),1e3,v=>nf0.format(v/1e3));
+kpi(document.getElementById('kpiV'),[
+ {l:'Meses Wages acima RDA',v:'5 / 6',n:'só jun abaixo (−R$ 86 mil)'},
+ {l:'Maior estouro Wages',v:'abr',n:'+R$ 749 mil'},
+ {l:'Meses Exp. acima RDA',v:'6 / 6',n:'estouro em todos'},
+ {l:'Maior estouro Exp.',v:'mai',n:'+R$ 241 mil'}]);
+
+const cwByV=VESSELS.map((_,j)=>sum(K.map(k=>CW[k][j])));
+const ceByV=VESSELS.map((_,j)=>sum(K.map(k=>CE[k][j])));
+vbar(document.getElementById('bW'),cwByV,v=>nf2.format(v/1e6));
+vbar(document.getElementById('bE'),ceByV,v=>nf0.format(v/1e3));
+
+window.__ready=true;
+</script>
