@@ -1,12 +1,14 @@
 import os
-from datetime import date
+from datetime import date, datetime
 from decimal import Decimal, InvalidOperation
 
-from flask import Flask, render_template, request, redirect, url_for, flash
+from flask import Flask, render_template, request, redirect, url_for, flash, Response
 from sqlalchemy import (
-    create_engine, Column, Integer, String, Date, Numeric, ForeignKey, UniqueConstraint, Text
+    create_engine, Column, Integer, String, Date, DateTime, Numeric, ForeignKey, UniqueConstraint, Text, or_
 )
 from sqlalchemy.orm import declarative_base, relationship, sessionmaker
+
+import qive
 
 # -----------------------------
 # App + DB config (Render)
@@ -113,6 +115,34 @@ class Entry(Base):
         UniqueConstraint("business_key", name="uq_entry_business_key"),
     )
 
+class QiveNote(Base):
+    """Nota (NF-e / CT-e) baixada do Qive pelo robô."""
+    __tablename__ = "qive_notes"
+    id = Column(Integer, primary_key=True)
+    access_key = Column(String(44), unique=True, nullable=False)
+    doc_type = Column(String(5), nullable=False)          # NFE | CTE
+    number = Column(String(20), nullable=True)
+    series = Column(String(5), nullable=True)
+    issue_date = Column(Date, nullable=True)
+    issuer_cnpj = Column(String(14), nullable=True)
+    issuer_name = Column(String(200), nullable=True)
+    recipient_cnpj = Column(String(14), nullable=True)
+    recipient_name = Column(String(200), nullable=True)
+    total_value = Column(Numeric(18, 2), nullable=True)
+    summary = Column(String(500), nullable=True)
+    xml = Column(Text, nullable=False)
+    fetched_at = Column(DateTime, nullable=False, default=datetime.utcnow)
+
+class QiveSyncState(Base):
+    """Posição (cursor) do robô em cada endpoint do Qive."""
+    __tablename__ = "qive_sync_state"
+    id = Column(Integer, primary_key=True)
+    doc_type = Column(String(5), unique=True, nullable=False)
+    cursor = Column(String(40), nullable=True)
+    last_run = Column(DateTime, nullable=True)
+    last_count = Column(Integer, nullable=True)
+    last_error = Column(String(500), nullable=True)
+
 def init_db():
     Base.metadata.create_all(bind=engine)
 
@@ -170,6 +200,67 @@ def infer_group(supplier_type: str | None, document_type: str | None):
     if st == "AGENCY" and dt in {"nd", "nfe"}:
         return "FDA"
     return "DIRECT"
+
+# -----------------------------
+# Robô Qive
+# -----------------------------
+def upsert_qive_notes(session, items):
+    """Grava/atualiza notas (lista de (access_key, xml)). Retorna quantas foram gravadas."""
+    n = 0
+    for key, xml_str in items:
+        data = qive.parse_xml(key, xml_str)
+        note = session.query(QiveNote).filter_by(access_key=key).first()
+        if note is None:
+            note = QiveNote(access_key=key)
+            session.add(note)
+        for k, v in data.items():
+            setattr(note, k, v)
+        note.xml = xml_str
+        note.fetched_at = datetime.utcnow()
+        n += 1
+    session.flush()
+    return n
+
+def run_qive_robot(max_pages=4):
+    """
+    Busca as notas novas no Qive a partir do último cursor salvo.
+    max_pages limita o volume por execução (cada página = até 50 notas),
+    para não estourar o timeout do servidor web quando disparado pelo botão.
+    """
+    session = SessionLocal()
+    report = {}
+    try:
+        for doc_type in qive.ENDPOINTS:
+            state = get_or_create(session, QiveSyncState, doc_type=doc_type)
+            total = 0
+            try:
+                for _ in range(max_pages):
+                    items, next_cursor = qive.fetch_page(doc_type, state.cursor)
+                    total += upsert_qive_notes(session, items)
+                    state.cursor = next_cursor
+                    session.commit()  # salva progresso página a página
+                    if len(items) < qive.PAGE_LIMIT:
+                        break
+                state.last_error = None
+            except qive.QiveError as e:
+                session.rollback()
+                state = get_or_create(session, QiveSyncState, doc_type=doc_type)
+                state.last_error = str(e)[:500]
+            state.last_run = datetime.utcnow()
+            state.last_count = total
+            session.commit()
+            report[doc_type] = {"count": total, "error": state.last_error}
+    finally:
+        session.close()
+    return report
+
+@app.cli.command("qive-sync")
+def qive_sync_cli():
+    """Roda o robô Qive (uso em cron: flask --app app qive-sync)."""
+    init_db()
+    report = run_qive_robot(max_pages=int(os.getenv("QIVE_MAX_PAGES", "40")))
+    for doc_type, r in report.items():
+        print(f"{doc_type}: {r['count']} nota(s)" + (f" | ERRO: {r['error']}" if r["error"] else ""))
 
 # -----------------------------
 # Routes
@@ -472,6 +563,130 @@ def entry_new(op_id):
 
     session.close()
     return render_template("entry_new.html", op=op, suppliers=suppliers)
+
+# ---- Workbench ----
+@app.get("/workbench")
+def workbench():
+    init_db()
+    return render_template("workbench.html")
+
+@app.get("/workbench/qive")
+def workbench_qive():
+    init_db()
+    session = SessionLocal()
+
+    f = {k: s(request.args.get(k)) for k in
+         ["q", "key", "cnpj", "number", "doc_type", "date_from", "date_to", "value_min", "value_max"]}
+
+    query = session.query(QiveNote)
+    searched = any(f.values())
+
+    if f["key"]:
+        query = query.filter(QiveNote.access_key.contains(qive.clean_key(f["key"])))
+    if f["q"]:
+        like = f"%{f['q']}%"
+        query = query.filter(or_(QiveNote.issuer_name.ilike(like),
+                                 QiveNote.recipient_name.ilike(like),
+                                 QiveNote.summary.ilike(like)))
+    if f["cnpj"]:
+        cnpj = qive.clean_key(f["cnpj"])
+        query = query.filter(or_(QiveNote.issuer_cnpj.contains(cnpj),
+                                 QiveNote.recipient_cnpj.contains(cnpj)))
+    if f["number"]:
+        query = query.filter(QiveNote.number == f["number"].lstrip("0"))
+    if f["doc_type"] in ("NFE", "CTE"):
+        query = query.filter(QiveNote.doc_type == f["doc_type"])
+    try:
+        if f["date_from"]:
+            query = query.filter(QiveNote.issue_date >= date.fromisoformat(f["date_from"]))
+        if f["date_to"]:
+            query = query.filter(QiveNote.issue_date <= date.fromisoformat(f["date_to"]))
+    except ValueError:
+        flash("Data inválida no filtro.", "error")
+    vmin, vmax = to_decimal(f["value_min"]), to_decimal(f["value_max"])
+    if vmin is not None:
+        query = query.filter(QiveNote.total_value >= vmin)
+    if vmax is not None:
+        query = query.filter(QiveNote.total_value <= vmax)
+
+    notes = query.order_by(QiveNote.issue_date.desc().nullslast(), QiveNote.id.desc()).limit(300).all()
+    total_db = session.query(QiveNote).count()
+    states = session.query(QiveSyncState).order_by(QiveSyncState.doc_type).all()
+    session.close()
+
+    return render_template("workbench_qive.html", notes=notes, f=f, searched=searched,
+                           total_db=total_db, states=states, configured=qive.is_configured())
+
+@app.post("/workbench/qive/sync")
+def workbench_qive_sync():
+    init_db()
+    report = run_qive_robot(max_pages=4)
+    for doc_type, r in report.items():
+        if r["error"]:
+            flash(f"Robô {doc_type}: erro - {r['error']}", "error")
+        else:
+            flash(f"Robô {doc_type}: {r['count']} nota(s) atualizada(s).", "ok")
+    return redirect(url_for("workbench_qive"))
+
+@app.post("/workbench/qive/lookup")
+def workbench_qive_lookup():
+    """Consulta direta no Qive por chave de acesso (uma por linha), mesmo que o robô ainda não tenha baixado."""
+    init_db()
+    keys = [qive.clean_key(k) for k in (request.form.get("keys") or "").splitlines()]
+    keys = list(dict.fromkeys(k for k in keys if len(k) == 44))
+    if not keys:
+        flash("Informe ao menos uma chave de acesso válida (44 dígitos).", "error")
+        return redirect(url_for("workbench_qive"))
+
+    session = SessionLocal()
+    found = 0
+    try:
+        for doc_type in qive.ENDPOINTS:
+            group = [k for k in keys if qive.doc_type_from_key(k) == doc_type]
+            for i in range(0, len(group), qive.PAGE_LIMIT):
+                found += upsert_qive_notes(session, qive.fetch_by_keys(doc_type, group[i:i + qive.PAGE_LIMIT]))
+        session.commit()
+    except qive.QiveError as e:
+        session.rollback()
+        flash(f"Erro ao consultar o Qive: {e}", "error")
+        session.close()
+        return redirect(url_for("workbench_qive"))
+    session.close()
+
+    missing = len(keys) - found
+    flash(f"{found} nota(s) encontrada(s) no Qive." + (f" {missing} não encontrada(s)." if missing else ""),
+          "ok" if not missing else "error")
+    if len(keys) == 1 and found:
+        return redirect(url_for("workbench_qive_detail", access_key=keys[0]))
+    return redirect(url_for("workbench_qive", key="\n".join(keys) if len(keys) == 1 else None))
+
+@app.get("/workbench/qive/<access_key>")
+def workbench_qive_detail(access_key):
+    init_db()
+    session = SessionLocal()
+    note = session.query(QiveNote).filter_by(access_key=access_key).first()
+    if not note:
+        session.close()
+        return "Nota não encontrada", 404
+
+    # lançamentos do sistema que citam esta nota (nº ou chave no campo referência)
+    refs = [note.access_key] + ([note.number] if note.number else [])
+    entries = session.query(Entry).filter(Entry.reference_number.in_(refs)).all()
+    for e in entries:
+        _ = e.operation.operation_key  # carrega antes de fechar a sessão
+    session.close()
+    return render_template("workbench_qive_detail.html", note=note, entries=entries)
+
+@app.get("/workbench/qive/<access_key>/xml")
+def workbench_qive_xml(access_key):
+    init_db()
+    session = SessionLocal()
+    note = session.query(QiveNote).filter_by(access_key=access_key).first()
+    session.close()
+    if not note:
+        return "Nota não encontrada", 404
+    return Response(note.xml, mimetype="application/xml",
+                    headers={"Content-Disposition": f"attachment; filename={note.doc_type}-{access_key}.xml"})
 
 if __name__ == "__main__":
     init_db()

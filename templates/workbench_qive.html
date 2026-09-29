@@ -1,0 +1,85 @@
+{% extends "layout.html" %}
+{% block content %}
+<h2>Workbench › Consulta de Notas (Qive)</h2>
+
+{% if not configured %}
+  <div class="msg"><b>Robô desligado:</b> configure as variáveis <code>QIVE_API_ID</code> e
+  <code>QIVE_API_KEY</code> no servidor (Render › Environment) para habilitar a consulta.</div>
+{% endif %}
+
+<div class="card">
+  <b>Robô Qive</b> — {{ total_db }} nota(s) na base local.
+  <table style="margin:8px 0">
+    <thead><tr><th>Tipo</th><th>Última execução (UTC)</th><th>Notas na última execução</th><th>Erro</th></tr></thead>
+    <tbody>
+      {% for st in states %}
+        <tr>
+          <td>{{ st.doc_type }}</td>
+          <td>{{ st.last_run.strftime("%d/%m/%Y %H:%M") if st.last_run else "-" }}</td>
+          <td>{{ st.last_count if st.last_count is not none else "-" }}</td>
+          <td>{{ st.last_error or "" }}</td>
+        </tr>
+      {% else %}
+        <tr><td colspan="4">Robô ainda não executado.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <form method="post" action="/workbench/qive/sync" onsubmit="this.querySelector('button').disabled=true">
+    <button {% if not configured %}disabled{% endif %}>Rodar robô agora (busca notas novas)</button>
+  </form>
+</div>
+
+<div class="card">
+  <b>Consultar direto no Qive por chave de acesso</b> (uma por linha, até 50)
+  <form method="post" action="/workbench/qive/lookup">
+    <textarea name="keys" rows="3" style="width:100%" placeholder="3524 0512 3456 7800 0190 5500 1000 0012 3410 0000 1234"></textarea>
+    <button {% if not configured %}disabled{% endif %}>Consultar no Qive</button>
+  </form>
+</div>
+
+<div class="card">
+  <b>Pesquisar na base</b>
+  <form method="get" class="row" style="margin-top:8px">
+    <input name="q" value="{{ f.q or '' }}" placeholder="Fornecedor / produto / rota">
+    <input name="cnpj" value="{{ f.cnpj or '' }}" placeholder="CNPJ">
+    <input name="number" value="{{ f.number or '' }}" placeholder="Nº da nota" size="10">
+    <input name="key" value="{{ f.key or '' }}" placeholder="Chave (parte)">
+    <select name="doc_type">
+      <option value="">NF-e e CT-e</option>
+      <option value="NFE" {% if f.doc_type == 'NFE' %}selected{% endif %}>NF-e</option>
+      <option value="CTE" {% if f.doc_type == 'CTE' %}selected{% endif %}>CT-e</option>
+    </select>
+    <label>De <input type="date" name="date_from" value="{{ f.date_from or '' }}"></label>
+    <label>Até <input type="date" name="date_to" value="{{ f.date_to or '' }}"></label>
+    <input name="value_min" value="{{ f.value_min or '' }}" placeholder="Valor mín." size="10">
+    <input name="value_max" value="{{ f.value_max or '' }}" placeholder="Valor máx." size="10">
+    <button>Pesquisar</button>
+    <a href="/workbench/qive" style="align-self:center">limpar</a>
+  </form>
+</div>
+
+<p>{{ notes|length }} resultado(s){% if notes|length == 300 %} (mostrando os 300 mais recentes — refine o filtro){% endif %}.</p>
+<table>
+  <thead>
+    <tr><th>Tipo</th><th>Nº/Série</th><th>Emissão</th><th>Emitente</th><th>CNPJ Emitente</th>
+        <th>Destinatário</th><th>Valor (R$)</th><th>Resumo</th><th></th></tr>
+  </thead>
+  <tbody>
+    {% for n in notes %}
+      <tr>
+        <td>{{ n.doc_type }}</td>
+        <td>{{ n.number or "" }}/{{ n.series or "" }}</td>
+        <td>{{ n.issue_date.strftime("%d/%m/%Y") if n.issue_date else "" }}</td>
+        <td>{{ n.issuer_name or "" }}</td>
+        <td>{{ n.issuer_cnpj or "" }}</td>
+        <td>{{ n.recipient_name or "" }}</td>
+        <td style="text-align:right">{{ "{:,.2f}".format(n.total_value).replace(",", "X").replace(".", ",").replace("X", ".") if n.total_value is not none else "" }}</td>
+        <td>{{ (n.summary or "")[:80] }}</td>
+        <td><a href="/workbench/qive/{{ n.access_key }}">abrir</a> | <a href="/workbench/qive/{{ n.access_key }}/xml">XML</a></td>
+      </tr>
+    {% else %}
+      <tr><td colspan="9">{% if searched %}Nenhuma nota encontrada com esses filtros. Se tiver a chave, use "Consultar direto no Qive".{% else %}Nenhuma nota na base ainda. Rode o robô.{% endif %}</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

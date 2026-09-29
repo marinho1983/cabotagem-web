@@ -1,0 +1,40 @@
+{% extends "layout.html" %}
+{% block content %}
+<p><a href="/workbench/qive">‹ voltar à consulta</a></p>
+<h2>{{ "NF-e" if note.doc_type == "NFE" else "CT-e" }} {{ note.number or "" }}/{{ note.series or "" }}</h2>
+
+<div class="card">
+  <p><b>Chave de acesso:</b> <code>{{ note.access_key }}</code></p>
+  <p><b>Emissão:</b> {{ note.issue_date.strftime("%d/%m/%Y") if note.issue_date else "-" }}</p>
+  <p><b>Emitente:</b> {{ note.issuer_name or "-" }} ({{ note.issuer_cnpj or "-" }})</p>
+  <p><b>Destinatário:</b> {{ note.recipient_name or "-" }} ({{ note.recipient_cnpj or "-" }})</p>
+  <p><b>Valor total:</b> R$ {{ "{:,.2f}".format(note.total_value).replace(",", "X").replace(".", ",").replace("X", ".") if note.total_value is not none else "-" }}</p>
+  <p><b>{{ "Produtos/Serviços" if note.doc_type == "NFE" else "Rota / Carga" }}:</b> {{ note.summary or "-" }}</p>
+  <p><b>Baixada do Qive em (UTC):</b> {{ note.fetched_at.strftime("%d/%m/%Y %H:%M") }}</p>
+  <p>
+    <a href="/workbench/qive/{{ note.access_key }}/xml">Baixar XML</a>
+  </p>
+</div>
+
+<h3>Lançamentos no sistema ligados a esta nota</h3>
+<p style="font-size:13px">Vínculo pelo campo "Referência" do lançamento (nº da nota ou chave de acesso).</p>
+<table>
+  <thead><tr><th>Operação</th><th>Grupo</th><th>Doc</th><th>Referência</th><th>Moeda</th><th>Valor</th><th>BRL</th><th></th></tr></thead>
+  <tbody>
+    {% for e in entries %}
+      <tr>
+        <td>{{ e.operation.operation_key }}</td>
+        <td>{{ e.billing_group }}</td>
+        <td>{{ e.document_type or "" }}</td>
+        <td>{{ e.reference_number or "" }}</td>
+        <td>{{ e.currency }}</td>
+        <td>{{ e.amount_original }}</td>
+        <td>{{ e.amount_brl or "" }}</td>
+        <td><a href="/operation/{{ e.operation_id }}">abrir operação</a></td>
+      </tr>
+    {% else %}
+      <tr><td colspan="8">Nenhum lançamento vinculado. Ao lançar a despesa, informe o nº da nota ou a chave no campo Referência.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}
