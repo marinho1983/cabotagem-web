@@ -1,0 +1,38 @@
+{
+  "caixa_opsfin": "EMAIL-CAIXA-OPS-FIN",
+  "caixa_mxm": "SEU-EMAIL",
+  "remetente_mxm": "noreply@mxmwebmanager.com.br",
+  "caixa_relatorio": "SEU-EMAIL",
+
+  "categorias": {
+    "sinal": "FLASH - PRESTAR CONTAS",
+    "pronto": "FLASH - RASCUNHO PRONTO",
+    "pendencia": "FLASH - PENDENCIA"
+  },
+
+  "destinatarios_prestacao": {
+    "para": [
+      "EMAIL-JESSICA",
+      "EMAIL-PROTOCOLO-FISCAL",
+      "EMAIL-CONTAS-A-PAGAR",
+      "EMAIL-WILLYANSON",
+      "EMAIL-SANCHEZ"
+    ],
+    "cc": ["EMAIL-CAIXA-OPS-FIN"]
+  },
+
+  "pasta_danfes": {
+    "tipo": "site",
+    "site": "posidonia.sharepoint.com:/sites/NOME-DO-SITE",
+    "biblioteca": "Documentos",
+    "caminho": "CAMINHO/DA/PASTA/DANFES",
+    "profundidade": 3
+  },
+
+  "pasta_pos": {
+    "tipo": "usuario",
+    "dono": "SEU-EMAIL",
+    "caminho": "CAMINHO/DA/PASTA/POS",
+    "profundidade": 3
+  }
+}
